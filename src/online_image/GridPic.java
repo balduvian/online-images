@@ -23,7 +23,7 @@ import javax.swing.*;
 public class GridPic {
 	
 	GFrame gg;
-	BufferedImage[][] pics = new BufferedImage[1][1];
+	BufferedImage[][] pics = new BufferedImage[2][2];
 	boolean runn = true;
 	boolean pulse = true;
 	BufferedImage def;
@@ -193,19 +193,14 @@ public class GridPic {
 			
 			addMouseListener(new MouseListener(){
 				public void mouseClicked(MouseEvent e) {
-					runn = bswitch(runn);
-					pulse = true;
-					//for(int y=0;y<pics.length;y++){
-					//	for(int x=0;x<pics[0].length;x++){
-						//	CD.creset(y,x);
-					//	}
-					//}
 				}
 				public void mouseEntered(MouseEvent e) {
 				}
 				public void mouseExited(MouseEvent e) {
 				}
 				public void mousePressed(MouseEvent e) {
+					runn = bswitch(runn);
+					pulse = true;
 				}
 				public void mouseReleased(MouseEvent e) {
 				}
