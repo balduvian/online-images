@@ -23,7 +23,7 @@ import javax.swing.*;
 public class GridPic {
 	
 	GFrame gg;
-	BufferedImage[][] pics = new BufferedImage[2][2];
+	BufferedImage[][] pics = new BufferedImage[1][1];
 	boolean runn = true;
 	boolean pulse = true;
 	BufferedImage def;
@@ -232,6 +232,7 @@ public class GridPic {
 				}else{
 					g.setColor(Color.WHITE);
 					g.drawRect(0, 0, getWidth(), getHeight());
+					g.setFont(new Font(Font.MONOSPACED,1,80));
 					g.setColor(Color.RED);
 					g.drawString("LOADING",100,100);
 				}

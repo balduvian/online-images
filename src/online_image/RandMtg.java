@@ -33,46 +33,60 @@ public class RandMtg {
 	
 	Window ww;
 	LinkedList<BufferedImage> cards = new LinkedList<BufferedImage>();
+	LinkedList<Color> colors = new LinkedList<Color>();
 	int times = 200;
 	BufferedImage def;
+	BufferedImage resample;
 	
-	public class Validator implements Runnable{
-		Thread t;
-		String tname;
-		
-		public Validator(String threadName){
-			tname = threadName;
+	public BufferedImage crop(BufferedImage b, int x1, int y1, int x2, int y2){
+		BufferedImage nn = new BufferedImage(x2-x1,y2-y1,BufferedImage.TYPE_INT_ARGB);
+		for(int y=y1;y<y2;y++){
+			for(int x=x1;x<x2;x++){
+				nn.setRGB(x-x1, y-y1, b.getRGB(x,y));
+			}
 		}
-		
-		public void run(){
-			ww.revalidate();
-			ww.repaint();
-			System.out.println("GO");
-			try {
-				Thread.sleep(1);
-			}catch (InterruptedException e) {}
+		return nn;
+	}
+	
+	public Color getAvg(BufferedImage b){
+		LinkedList<Color> cs = new LinkedList<Color>();
+		for(int y=0;y<b.getHeight();y+=3){
+			for(int x=0;x<b.getWidth();x+=3){
+				cs.add(new Color(b.getRGB(x, y)));
+			}
 		}
-		public void start () {
-		         t = new Thread (this, tname);
-		         t.start();
-		   }
+		int[] t = new int[3];
+		for(int i=0;i<cs.size();i++){
+			t[0] += cs.get(i).getRed();
+			t[1] += cs.get(i).getGreen();
+			t[2] += cs.get(i).getBlue();
+		}
+		return new Color(t[0]/cs.size(),t[1]/cs.size(),t[2]/cs.size());
+	}
+	
+	public void resample(BufferedImage s, LinkedList<BufferedImage> pool, LinkedList<Color> cpool){
+		int across = s.getWidth();
 	}
 	
 	public RandMtg(){
 		ww = new Window();
-		new Validator("hi").start();
 		try{ def = ImageIO.read(getClass().getResource("Image.jpg"));} catch (IOException e) {}
-		
+		try{ resample = ImageIO.read(getClass().getResource("resample.jpg"));} catch (IOException e) {}
+		//
+		def = crop(def,18,36,207,173);
+		//
 		for(int i=0;i<times;i++){
 			BufferedImage now;
 			while(true){
 				now = getCard((int)(Math.random()*420617+1));
 				if(!same(now, def)){
+					getAvg(now);
 					break;
 				}
 			}
 			//now = samp(now,2);
 			cards.add(now);
+			colors.add(getAvg(now));
 			System.out.println("got "+(i+1)+" out of "+times);
 			ww.repaint();
 		}
@@ -89,6 +103,11 @@ public class RandMtg {
 		try{
 			image = ImageIO.read(new URL("http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid="+index+"&type=card"));
 		}catch(Exception ex){}
+		try{
+			image = crop(image,18,36,207,173);
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
 		return image;
 	}
 	
@@ -162,7 +181,7 @@ public class RandMtg {
 			        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 					super.paintComponent(g);
 					setBackground(Color.WHITE);
-					double scale = 0.85;
+					double scale = 2;
 					try{
 						int tsize = 20;
 						int margin = 5;
@@ -197,13 +216,15 @@ public class RandMtg {
 			        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 					super.paintComponent(g);
 					setBackground(Color.WHITE);
-					double scale = 0.85;
+					double scale = 1;
 					try{
 						int w = (int)(cards.get(0).getWidth(this)*scale);
 						int h = (int)(cards.get(0).getHeight(this)*scale);
 						double fw = ((this.getParent().getWidth())/w);
 						for(int i=0;i<cards.size();i++){
 							g2.drawImage(cards.get(i),(int)((i%fw)*w),(int)(Math.floor(i/fw)*h),(int)w,(int)h,this);
+							g2.setColor(colors.get(i));
+							g2.fillRect((int)((i%fw)*w),(int)(Math.floor(i/fw)*h),(int)w-50,(int)h-50);
 						}
 						revalidate();
 						setPreferredSize(new Dimension((int)(w*fw),(int)(h*(1+Math.floor(cards.size()/fw)))));
