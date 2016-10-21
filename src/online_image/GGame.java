@@ -17,15 +17,22 @@ import javax.swing.*;
 
 public class GGame {
 	
-	BufferedImage guess;
+	BufferedImage guess = null;
 	GFrame gg;
 	int[][] cover = new int[15][15];
 	
 	public GGame(){
 		gg = new GFrame();
 		reset();
-		while(true){
-			gg.repaint();
+		D t = new D();
+		t.run();
+	}
+	
+	public class D implements Runnable{
+		public void run() {
+			while(true){
+				gg.canvas.repaint();
+			}
 		}
 	}
 	
@@ -58,6 +65,7 @@ public class GGame {
 	
 	public void reset(){
 		guess = null;
+		gg.canvas.repaint();
 		cover = setall(cover, 0);
 		while(true){
 			int f0 = (int)(Math.random()*5000+40);
@@ -132,7 +140,6 @@ public class GGame {
 						cover = setall(cover, 1);
 					}
 					if(m.intersects(new Rectangle(140, getHeight()-50+5, 120, 40))){
-						guess = null;
 						reset();
 					}
 				}
@@ -157,7 +164,7 @@ public class GGame {
 				g.setFont(new Font(Font.MONOSPACED,1,20));
 				g.drawString("Reveal", 10, getHeight()-50+35);
 				g.drawString("New", 145, getHeight()-50+35);
-				g.setColor(Color.RED);
+				g.setColor(Color.BLUE);
 				if(guess != null){
 					g.drawImage(guess, 0, 0, getWidth(), getHeight()-50, this);
 					for(int y=0;y<cover.length;y++){
@@ -170,7 +177,11 @@ public class GGame {
 						}
 					}
 				}else{
+					System.out.println("NILL");
+					g.setColor(Color.WHITE);
+					g.drawRect(0, 0, getWidth(), getHeight()-50);
 					int fs = 60;
+					g.setColor(Color.RED);
 					g.setFont(new Font(Font.MONOSPACED,1,fs));
 					String t = "LOADING IMAGE";
 					g.drawString(t, (int)(getWidth()/2-((t.length()*fs*0.60)/2)), (getHeight()-10)/2);

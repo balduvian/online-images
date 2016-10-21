@@ -33,7 +33,7 @@ public class RandMtg {
 	
 	Window ww;
 	LinkedList<BufferedImage> cards = new LinkedList<BufferedImage>();
-	int times = 10;
+	int times = 200;
 	BufferedImage def;
 	
 	public class Validator implements Runnable{
@@ -77,7 +77,6 @@ public class RandMtg {
 			ww.repaint();
 		}
 		while(true){
-			ww.crush();
 			ww.revalidate();
 			try{
 			Thread.sleep(1);
@@ -119,22 +118,9 @@ public class RandMtg {
 	
 	public class Window extends JFrame{
 		
-		GridBagConstraints c;
-		
-		public void crush(){
-			c.ipadx = getWidth()/c.gridwidth;
-			c.ipady = getHeight()/c.gridheight;
-		}
-		
 		public Window(){
 			setSize(800,480);
-			setLayout(new GridBagLayout());
-			c = new GridBagConstraints();
-			c.fill = GridBagConstraints.HORIZONTAL;
-			c.gridheight = 1;
-			c.gridwidth = 2;
-			c.ipadx = getWidth()/c.gridwidth;
-			c.ipady = getHeight()/c.gridheight;
+			setLayout(new GridLayout());
 			addWindowListener(new WindowListener(){
 				public void windowActivated(WindowEvent arg0) {
 				}
@@ -152,14 +138,8 @@ public class RandMtg {
 				public void windowOpened(WindowEvent e) {
 				}	
 			});
-			c.anchor = GridBagConstraints.PAGE_END;
-			//c.gridx = 0;
-			//c.gridy = 0;
-			add(new JScrollPane(new LTest()),c);
-			//c.gridx = 1;
-			c.anchor = GridBagConstraints.PAGE_START;
-			//c.gridy = 0;
-			add(new JScrollPane(new RTest()),c);
+			//add(new JScrollPane(new LTest()));
+			add(new JScrollPane(new RTest()));
 			setVisible(true);
 		}
 		
@@ -219,14 +199,13 @@ public class RandMtg {
 					setBackground(Color.WHITE);
 					double scale = 0.85;
 					try{
-						ww.crush();
 						int w = (int)(cards.get(0).getWidth(this)*scale);
 						int h = (int)(cards.get(0).getHeight(this)*scale);
 						double fw = ((this.getParent().getWidth())/w);
 						for(int i=0;i<cards.size();i++){
 							g2.drawImage(cards.get(i),(int)((i%fw)*w),(int)(Math.floor(i/fw)*h),(int)w,(int)h,this);
 						}
-
+						revalidate();
 						setPreferredSize(new Dimension((int)(w*fw),(int)(h*(1+Math.floor(cards.size()/fw)))));
 						
 					}catch(Exception ex){}
